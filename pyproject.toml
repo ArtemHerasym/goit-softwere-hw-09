@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "module-s9-homework"
+version = "0.1.0"
+description = ""
+authors = ["Art-eri-ya <gerasartem4@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.14"
+beautifulsoup4 = "^4.15.0"
+lxml = "^6.1.1"
+requests = "^2.34.2"
+scrapy = "^2.16.0"
+python-dotenv = "^1.2.2"
+mongoengine = "^0.29.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
