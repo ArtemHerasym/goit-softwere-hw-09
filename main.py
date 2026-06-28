@@ -14,24 +14,26 @@ class QuotesSpider(scrapy.Spider):
 
     def parse(self, response):
         for quote in response.css("div.quote"):
+            author_name = quote.css(".author::text").get()
             quotes = {
                       "tags" : quote.css(".tag::text").getall(),
-                      "author" : quote.css(".author::text").get(),
+                      "author" : author_name,
                       "quote" : quote.css(".text::text").get()
                       }
             yield quotes
             author_link = quote.css("a[href^='/author']::attr(href)").get()
             self.quotes_data.append(quotes)
-            yield response.follow(author_link, callback=self.parse_author)
+            yield response.follow(author_link, callback=self.parse_author, meta={"fullname": author_name})
 
         next_page = response.css(".next a::attr(href)").get()
         if next_page:
             yield response.follow(next_page, callback=self.parse)
 
     def parse_author(self, response):
+        fullname = response.meta["fullname"]
 
         authors = {
-            "fullname" : response.css(".author-title::text").get(),
+            "fullname" : fullname,
             "born_date" : response.css(".author-born-date::text").get(),
             "born_location" : response.css(".author-born-location::text").get(),
             "description" : response.css(".author-description::text").get().strip(),
@@ -40,7 +42,7 @@ class QuotesSpider(scrapy.Spider):
         if fullname not in self.authors_seen:
             self.authors_seen.add(fullname)
             self.authors_data.append(authors)
-        yield authors
+            yield authors
 
     def closed(self, reason):
         with open ('quotes.json', 'w', encoding='utf-8') as f:
